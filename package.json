@@ -1,6 +1,6 @@
 {
   "name": "rmtaskmaster",
-  "version": "0.1.0",
+  "version": "0.7.0",
   "description": "Provides limited Redmine integration to Slack",
   "main": "server.js",
   "scripts": {
@@ -32,5 +32,8 @@
   },
   "devDependencies": {
     "nodemon": "^1.19.0"
+  },
+  "engines": {
+    "node": "10.x"
   }
 }
