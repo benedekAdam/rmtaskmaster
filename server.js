@@ -1,8 +1,9 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const axios = require('axios');
-const Redmine = require('node-redmine');
 const config = require('./config/keys.js');
+
+const rmPromise = require('promised-redmine');
 
 const app = express();
 
@@ -77,30 +78,26 @@ function registerApiKey() {
 
 //returns information about the requested task
 function returnIssueData(res) {
+    //So we won't get a timeout error
+    res.status(200).send('');
     var hostname = config.RM_HOST;
     var rmConfig = {
-        apiKey: config.RM_DEFAULT_API_KEY
+        host: config.RM_HOST_WITHOUT_PROTOCOL,
+        apiKey: config.RM_DEFAULT_API_KEY,
+        protocol: "https",
+        verbose: true
     };
 
-    var rm = new Redmine(hostname, rmConfig);
+    var rm2 = new rmPromise(rmConfig);
+    rm2.setVerbose(true);
 
     var issueData = {};
-    var dump_issue = function (issue) {
+
+    rm2.getIssue(parseInt(reqBody.text)).success(function (issue) {
+        console.log(issue);
         for (var item in issue) {
-            issueData[item] = JSON.stringify(issue[item]);
+            issueData[item] = issue[item];
         }
-    }
-
-    rm.get_issue_by_id(parseInt(reqBody.text), {}, function (err, data) {
-        if (err) {
-            //very basic error handling
-            //TODO: make it better
-            res.send(err);
-            return;
-        }
-
-
-        dump_issue(data.issue);
         var issueResponse = createIssueResponse(issueData);
 
         var headers = {
@@ -115,23 +112,36 @@ function returnIssueData(res) {
                 console.log(error);
             });
     });
-
-    //res.send('ok');
 }
 
 function createIssueResponse(issueData) {
-    var helpMessage = {
+    console.log(issueData);
+    var messageBody = {
         "attachments": [
             {
-                "color": config.HELP_CONFIG.color,
-                "title": config.HELP_CONFIG.title,
-                "title_link": config.HELP_CONFIG.title_link,
-                "text": "asdasdsad",
-                "mrkdwn": true
+                "color": config.PRIORITY_COLORS[issueData.priority.id],
+                "author_name": issueData.project.name,
+                "author_link": config.RM_HOST + "/projects/" + issueData.project.id,
+                "author_icon": "http://flickr.com/icons/bobby.jpg",
+                "title": "#" + issueData.id + " - " + issueData.subject,
+                "title_link": config.RM_HOST + "/issues/" + issueData.id,
+                "text": "Optional text that appears within the attachment",
+                "fields": [
+                    {
+                        "title": "Priority",
+                        "value": "High",
+                        "short": false
+                    }
+                ],
+                "image_url": "http://my-website.com/path/to/image.jpg",
+                "thumb_url": "http://example.com/path/to/thumb.png",
+                "footer": "Slack API",
+                "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
+                "ts": 123456789
             }
         ],
         "response_type": "in_channel"
     };
 
-    return helpMessage;
+    return messageBody;
 }
