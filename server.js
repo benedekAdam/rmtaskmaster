@@ -1,9 +1,8 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const axios = require('axios');
+const Redmine = require('promised-redmine');
 const config = require('./config/keys.js');
-
-const rmPromise = require('promised-redmine');
 
 const app = express();
 
@@ -78,6 +77,7 @@ function registerApiKey() {
 
 //returns information about the requested task
 function returnIssueData(res) {
+    //TODO: use custom API-key
     //So we won't get a timeout error
     res.status(200).send('');
     var hostname = config.RM_HOST;
@@ -88,12 +88,12 @@ function returnIssueData(res) {
         verbose: true
     };
 
-    var rm2 = new rmPromise(rmConfig);
-    rm2.setVerbose(true);
+    var redmine = new Redmine(rmConfig);
+    redmine.setVerbose(true);
 
     var issueData = {};
 
-    rm2.getIssue(parseInt(reqBody.text)).success(function (issue) {
+    redmine.getIssue(parseInt(reqBody.text)).success(function (issue) {
         console.log(issue);
         for (var item in issue) {
             issueData[item] = issue[item];
@@ -115,22 +115,46 @@ function returnIssueData(res) {
 }
 
 function createIssueResponse(issueData) {
-    console.log(issueData);
     var messageBody = {
         "attachments": [
             {
-                "color": config.PRIORITY_COLORS[issueData.priority.id],
+                "color": issueData.closed_on ? config.PRIORITY_COLORS.closed : config.PRIORITY_COLORS[issueData.priority.id], //if closed, apply another color
                 "author_name": issueData.project.name,
                 "author_link": config.RM_HOST + "/projects/" + issueData.project.id,
                 "author_icon": "http://flickr.com/icons/bobby.jpg",
                 "title": "#" + issueData.id + " - " + issueData.subject,
                 "title_link": config.RM_HOST + "/issues/" + issueData.id,
-                "text": "Optional text that appears within the attachment",
+                "text": issueData.description,
                 "fields": [
                     {
-                        "title": "Priority",
-                        "value": "High",
-                        "short": false
+                        "title": "Felvette",
+                        "value": issueData.author.name,
+                        "short": true
+                    },
+                    {
+                        "title": "Felelős",
+                        "value": issueData.assigned_to.name,
+                        "short": true
+                    },
+                    {
+                        "title": "Státusz",
+                        "value": issueData.status.name,
+                        "short": true
+                    },
+                    {
+                        "title": "Prioritás",
+                        "value": issueData.priority.name,
+                        "short": true
+                    },
+                    {
+                        "title": "Felvétel időpontja",
+                        "value": issueData.created_on,
+                        "short": true
+                    },
+                    {
+                        "title": "Készültség",
+                        "value": issueData.assigned_to.name,
+                        "short": true
                     }
                 ],
                 "image_url": "http://my-website.com/path/to/image.jpg",
