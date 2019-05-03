@@ -5,6 +5,7 @@ const axios = require('axios');
 const Redmine = require('promised-redmine');
 const mongoose = require('mongoose');
 const isHex = require('is-hex');
+const moment = require('moment');
 
 const config = require('./config/keys.js');
 const User = require('./models/User');
@@ -156,6 +157,8 @@ function returnIssueData(res) {
 }
 
 function createIssueResponse(issueData) {
+    var createDate = new Date(issueData.created_on).toLocaleString('hu-HU');
+    var updateDate = moment(issueData.updated_on).unix();
     var messageBody = {
         "attachments": [
             {
@@ -189,7 +192,7 @@ function createIssueResponse(issueData) {
                     },
                     {
                         "title": "Felvétel időpontja",
-                        "value": new Date(issueData.created_on).toDateString,
+                        "value": createDate,
                         "short": true
                     },
                     {
@@ -201,7 +204,7 @@ function createIssueResponse(issueData) {
                 "image_url": "http://my-website.com/path/to/image.jpg",
                 "thumb_url": "http://example.com/path/to/thumb.png",
                 "footer": "Utolsó frissítés időpontja:",
-                "ts": new Date(issueData.updated_on).toISOString()
+                "ts": updateDate
             }
         ],
         "response_type": "in_channel"
@@ -213,7 +216,6 @@ function createIssueResponse(issueData) {
 //Create &send a message about successful API-key registration
 //It should only be visible for the user that sent the request
 function sendMessage(message, res, error = false) {
-    console.log(typeof message);
     if (typeof message !== 'object') {
         var messageBody = {
             "attachments": [
