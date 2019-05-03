@@ -157,7 +157,8 @@ function returnIssueData(res) {
 }
 
 function createIssueResponse(issueData) {
-    var createDate = new Date(issueData.created_on).toLocaleString('hu-HU');
+    moment.locale('hu');
+    var createDate = moment(issueData.created_on).format("YYYY-MM-DD");
     var updateDate = moment(issueData.updated_on).unix();
     var messageBody = {
         "attachments": [
