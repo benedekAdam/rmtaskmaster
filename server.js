@@ -205,7 +205,8 @@ function createIssueResponse(issueData) {
                 "image_url": "http://my-website.com/path/to/image.jpg",
                 "thumb_url": "http://example.com/path/to/thumb.png",
                 "footer": "Utolsó frissítés időpontja:",
-                "ts": updateDate
+                "ts": updateDate,
+                "mrkdwn_in": ["text"]
             }
         ],
         "response_type": "in_channel"
