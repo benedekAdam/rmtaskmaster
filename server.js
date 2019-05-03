@@ -189,7 +189,7 @@ function createIssueResponse(issueData) {
                     },
                     {
                         "title": "Felvétel időpontja",
-                        "value": issueData.created_on,
+                        "value": new Date(issueData.created_on).toDateString,
                         "short": true
                     },
                     {
@@ -201,7 +201,7 @@ function createIssueResponse(issueData) {
                 "image_url": "http://my-website.com/path/to/image.jpg",
                 "thumb_url": "http://example.com/path/to/thumb.png",
                 "footer": "Utolsó frissítés időpontja:",
-                "ts": issueData.updated_on
+                "ts": new Date(issueData.updated_on).toISOString();
             }
         ],
         "response_type": "in_channel"
