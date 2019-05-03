@@ -198,7 +198,7 @@ function createIssueResponse(issueData) {
                     },
                     {
                         "title": "Készültség",
-                        "value": issueData.assigned_to.name,
+                        "value": issueData.done_ratio + "%",
                         "short": true
                     }
                 ],
