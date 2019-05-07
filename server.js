@@ -121,7 +121,7 @@ function returnIssueData(res) {
         }
 
         //TODO: error handling
-        var rmkeys = {
+        var rmConfig = {
             host: keys.RM_HOST_WITHOUT_PROTOCOL,
             apiKey: userApiKey,
             protocol: "https",
