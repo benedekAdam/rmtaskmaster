@@ -1,4 +1,3 @@
-require('newrelic');
 const bodyParser = require('body-parser');
 const express = require('express');
 const axios = require('axios');
@@ -53,15 +52,15 @@ const port = config.PORT;
 app.listen(port);
 
 function sendHelpMessage(res) {
-    var helpMsgArr = config.HELP_CONFIG.text;
+    var helpMsgArr = config.HELP_CONFIG_TEXT;
     var helpMsg = helpMsgArr.join('\n');
 
     var helpMessage = {
         "attachments": [
             {
-                "color": config.HELP_CONFIG.color,
-                "title": config.HELP_CONFIG.title,
-                "title_link": config.HELP_CONFIG.title_link,
+                "color": config.HELP_CONFIG_COLOR,
+                "title": config.HELP_CONFIG_TITLE,
+                "title_link": config.HELP_CONFIG_TITLE_LINK,
                 "text": helpMsg,
                 "mrkdwn": true
             }
@@ -128,12 +127,13 @@ function returnIssueData(res) {
             verbose: true
         };
 
+
         var redmine = new Redmine(rmConfig);
         redmine.setVerbose(true);
 
         var issueData = {};
-
         redmine.getIssue(parseInt(reqBody.text)).success(function (issue) {
+            //console.log('123');
             for (var item in issue) {
                 issueData[item] = issue[item];
             }
@@ -160,10 +160,11 @@ function createIssueResponse(issueData) {
     moment.locale('hu');
     var createDate = moment(issueData.created_on).format("YYYY-MM-DD");
     var updateDate = moment(issueData.updated_on).unix();
+    var colors = config.PRIORITY_COLORS;
     var messageBody = {
         "attachments": [
             {
-                "color": issueData.closed_on ? config.PRIORITY_COLORS.closed : config.PRIORITY_COLORS[issueData.priority.id], //if closed, apply another color
+                "color": issueData.closed_on ? colors['closed'] : colors[issueData.priority.id.toString()], //if closed, apply another color
                 "author_name": issueData.project.name,
                 "author_link": config.RM_HOST + "/projects/" + issueData.project.id,
                 "author_icon": "http://flickr.com/icons/bobby.jpg",
