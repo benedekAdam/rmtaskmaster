@@ -25,11 +25,15 @@ app.use(function (req, res) {
         if ('text' in req.body && req.body.text.length > 0) {
             reqBody = req.body;
             //call the correct function based on message
-            if (config.HELP_KEYWORD == reqBody.text.toLowerCase()) {
+            if (config.HELP_KEYWORD.indexOf(reqBody.text.toLowerCase()) >= 0) {
                 sendHelpMessage(res);
             } else {
                 if (reqBody.text.length < 15) {
-                    returnIssueData(res);
+                    if (Number.isInteger(parseInt(reqBody.text))) {
+                        returnIssueData(res);
+                    } else {
+                        sendMessage('Wrong parameter', res, true);
+                    }
                 } else {
                     //pretty sure that will be an API-key
                     //but check anyway
@@ -59,9 +63,9 @@ function sendHelpMessage(res) {
     var helpMessage = {
         "attachments": [
             {
-                "color": config.HELP_CONFIG_COLOR,
-                "title": config.HELP_CONFIG_TITLE,
-                "title_link": config.HELP_CONFIG_TITLE_LINK,
+                "color": config.HELP_CONFIG.color,
+                "title": config.HELP_CONFIG.title,
+                "title_link": config.HELP_CONFIG.title_link,
                 "text": helpMsg,
                 "mrkdwn": true
             }
@@ -165,7 +169,7 @@ function createIssueResponse(issueData) {
     var messageBody = {
         "attachments": [
             {
-                "color": issueData.closed_on ? colors['closed'] : colors[issueData.priority.id.toString()], //if closed, apply another color
+                "color": issueData.closed_on ? colors.closed : colors[issueData.priority.id], //if closed, apply another color
                 "author_name": issueData.project.name,
                 "author_link": keys.RM_HOST + "/projects/" + issueData.project.id,
                 "author_icon": "http://flickr.com/icons/bobby.jpg",
