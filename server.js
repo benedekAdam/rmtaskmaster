@@ -27,12 +27,14 @@ app.use(function (req, res) {
             //call the correct function based on message
             if (config.HELP_KEYWORD.indexOf(reqBody.text.toLowerCase()) >= 0) {
                 sendHelpMessage(res);
+            } else if (config.DELETE_KEYWORD.indexOf(reqBody.text.toLowerCase()) >= 0) {
+                deleteUser(res);
             } else {
                 if (reqBody.text.length < 15) {
                     if (Number.isInteger(parseInt(reqBody.text))) {
                         returnIssueData(res);
                     } else {
-                        sendMessage('Wrong parameter', res, true);
+                        sendMessage('Wrong parameter, issue number must be a number', res, true);
                     }
                 } else {
                     //pretty sure that will be an API-key
@@ -57,8 +59,7 @@ const port = keys.PORT;
 app.listen(port);
 
 function sendHelpMessage(res) {
-
-    var helpMsg = "Index szöveg, majd\nSaját API-kulcs használata ajánlott, nem biztos, hogy a default minden projekthez hozzáfér. Az API-kulcsod *<https://tasks.introweb.hu/my/api_key|itt>* éred el.\n\n*Használat:*\n_/rm2 help_ - Segítség kérése (itt vagy most)\n_/rm2 1234_ - Az #1234-es feladat adatainak lekérése\n_/rm2 j12tia6q06eiqsb1za4n3z2ymwnji5rinywzvt0b_ - A saját API-kulcsod regisztrálása a jövőbeli kéréseidhez. *Csak egyszer kell megtenned*, utána csak akkor, ha valamiért megváltoztatod.\n\n<https://github.com/benedekAdam/rmtaskmaster|Github repo>";
+    var helpMsg = config.HELP_CONFIG.text.join('\n');
 
     var helpMessage = {
         "attachments": [
@@ -74,7 +75,22 @@ function sendHelpMessage(res) {
     };
 
     sendMessage(helpMessage, res);
+}
 
+function deleteUser(res) {
+    mongoose.connect(keys.DB_ADDRESS, { useNewUrlParser: true })
+        .then(() => console.log('db connected'))
+        .catch((err) => console.log(err));
+
+    User.findOne({ userid: reqBody.user_id }, function (err, currentUser) {
+        if (err) console.log(err);
+        if (currentUser === null) {
+            sendMessage('There\'s nothing to delete; you\'re not registered', res, true);
+        } else {
+            currentUser.delete();
+            sendMessage('User deleted', res);
+        }
+    });
 }
 
 //registers a new API-key to the DB
@@ -93,7 +109,7 @@ function registerApiKey(res) {
 
             currentUser.save(function (err) {
                 if (!err) {
-                    var message = createSuccessfulRegistrationMessage();
+                    var message = 'Sikeres regisztráció';
                     sendMessage(message, res);
                 } else {
                     console.log(err);
@@ -138,15 +154,10 @@ function returnIssueData(res) {
 
         var issueData = {};
         redmine.getIssue(parseInt(reqBody.text)).success(function (issue) {
-            //console.log('123');
             for (var item in issue) {
                 issueData[item] = issue[item];
             }
             var issueResponse = createIssueResponse(issueData);
-
-            var headers = {
-                'Content-type': 'application/json;charset=utf-8',
-            };
 
             currentUser.request_count++;
             currentUser.save(function (err) {
@@ -156,7 +167,6 @@ function returnIssueData(res) {
                     res.send(err);
                 }
             });
-
         });
     });
 }

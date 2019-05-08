@@ -1,5 +1,6 @@
 module.exports = {
     HELP_KEYWORD: ['help', 'segítség', 'segitseg'],
+    DELETE_KEYWORD: ['delete', 'törlés', 'torles'],
     HELP_CONFIG: {
         color: "#000",
         title: "/rm Segítség",
