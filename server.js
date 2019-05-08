@@ -21,6 +21,7 @@ app.get('/', function (req, res) {
 })
 
 app.use(function (req, res) {
+    console.log('akarmi');
     //check if request came from the Slack team specified in keys
     if ('token' in req.body && req.body.token == keys.POST_TOKEN) {
         //We won't get timeout errors this way
