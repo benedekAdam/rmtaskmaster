@@ -13,6 +13,7 @@ module.exports = {
             "_/rm2 help_ - Segítség kérése (itt vagy most)",
             "_/rm2 1234_ - Az #1234-es feladat adatainak lekérése",
             "_/rm2 j12tia6q06eiqsb1za4n3z2ymwnji5rinywzvt0b_ - A saját API-kulcsod regisztrálása a jövőbeli kéréseidhez. *Csak egyszer kell megtenned*, utána csak akkor, ha valamiért megváltoztatod.",
+            "_/rm delete_ - Ha már regisztráltad az API-kulcsod, törli azt. Csak a sajátoddal működik, mást nem tudsz vele törölni",
             "",
             "<https://github.com/benedekAdam/rmtaskmaster|Github repo>"
         ]
