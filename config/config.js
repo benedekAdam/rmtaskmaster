@@ -10,9 +10,9 @@ module.exports = {
             "Saját API-kulcs használata ajánlott, nem biztos, hogy a default minden projekthez hozzáfér. Az API-kulcsod *<https://tasks.introweb.hu/my/api_key|itt>* éred el.",
             "",
             "*Használat:*",
-            "_/rm2 help_ - Segítség kérése (itt vagy most)",
-            "_/rm2 1234_ - Az #1234-es feladat adatainak lekérése",
-            "_/rm2 j12tia6q06eiqsb1za4n3z2ymwnji5rinywzvt0b_ - A saját API-kulcsod regisztrálása a jövőbeli kéréseidhez. *Csak egyszer kell megtenned*, utána csak akkor, ha valamiért megváltoztatod.",
+            "_/rm help_ - Segítség kérése (itt vagy most)",
+            "_/rm 1234_ - Az #1234-es feladat adatainak lekérése",
+            "_/rm j12tia6q06eiqsb1za4n3z2ymwnji5rinywzvt0b_ - A saját API-kulcsod regisztrálása a jövőbeli kéréseidhez. *Csak egyszer kell megtenned*, utána csak akkor, ha valamiért megváltoztatod.",
             "_/rm delete_ - Ha már regisztráltad az API-kulcsod, törli azt. Csak a sajátoddal működik, mást nem tudsz vele törölni",
             "",
             "<https://github.com/benedekAdam/rmtaskmaster|Github repo>"
