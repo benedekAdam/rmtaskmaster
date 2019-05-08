@@ -258,6 +258,6 @@ function sendMessage(message, res, error = false) {
             console.log(`statuscode: ${res}`);
         })
         .catch((error) => {
-            res.send(error);
+            console.log(error);
         });
 }
