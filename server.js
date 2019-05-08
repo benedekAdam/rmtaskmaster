@@ -16,6 +16,10 @@ var reqBody = {};
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.get('/', function (req, res) {
+    res.status(200).send('OK');
+})
+
 app.use(function (req, res) {
     //check if request came from the Slack team specified in keys
     if ('token' in req.body && req.body.token == keys.POST_TOKEN) {
