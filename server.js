@@ -16,12 +16,7 @@ var reqBody = {};
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get('/', function (req, res) {
-    res.status(200).send('OK');
-})
-
 app.use(function (req, res) {
-    console.log('akarmi');
     //check if request came from the Slack team specified in keys
     if ('token' in req.body && req.body.token == keys.POST_TOKEN) {
         //We won't get timeout errors this way
@@ -55,7 +50,11 @@ app.use(function (req, res) {
             sendMessage('Missing or empty request parameter (text)', res, true);
         }
     } else {
-        sendMessage('Missing or wrong keys parameter (POST_TOKEN)!', res, true);
+        if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+            res.status(200).send('OK');
+        } else {
+            sendMessage('Missing or wrong keys parameter (POST_TOKEN)!', res, true);
+        }
     }
 });
 
